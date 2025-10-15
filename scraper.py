@@ -26,6 +26,7 @@ ALBUMS = {
     '/albums/1171508': 'The Tortured Poets Department',
     '/albums/39094': 'The Taylor Swift Holiday Collection',
     '/albums/1013719': 'The Hunger Games',
+    '/albums/1498482': 'The Life of a Showgirl'
 }
 
 # Songs that don't have an album or for which Taylor Swift is not the primary artist
@@ -179,14 +180,14 @@ def albums_to_songs_csv(songs_by_album, existing_df=None):
     for album in songs_by_album:
         for song in songs_by_album[album]:
             song_title = clean_title(song.title)
-            if song_title not in IGNORE_SONGS and song_title not in songs_titles:
+            if song_title not in IGNORE_SONGS and song_title.lower() not in songs_titles:
                 record = {
                     'Title': song_title,
                     'Album': album,
                     'Lyrics': song.lyrics,
                 }
                 songs_records.append(record)
-                songs_titles.append(song_title)
+                songs_titles.append(song_title.lower())
 
     song_df = pd.DataFrame.from_records(songs_records)
     if existing_df is not None:
