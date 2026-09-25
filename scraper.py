@@ -26,7 +26,8 @@ ALBUMS = {
     '/albums/1171508': 'The Tortured Poets Department',
     '/albums/39094': 'The Taylor Swift Holiday Collection',
     '/albums/1013719': 'The Hunger Games',
-    '/albums/1498482': 'The Life of a Showgirl'
+    '/albums/1498482': 'The Life of a Showgirl',
+    '/albums/1754722': 'The Life of a Showgirl: The Encore'
 }
 
 # Songs that don't have an album or for which Taylor Swift is not the primary artist
@@ -43,7 +44,8 @@ EXTRA_SONG_API_PATHS = {
     '/songs/6453633': "Women in Music Part III",
     '/songs/154241': "Two Lanes of Freedom",
     '/songs/187143': 'The Hannah Montana Movie',
-    '/songs/6688373': "Fearless (Taylor's Version)"
+    '/songs/6688373': "Fearless (Taylor's Version)",
+    '/songs/13658277': "I Knew It, I Knew You"
 }
 
 # Songs that are somehow duplicates / etc.
@@ -105,6 +107,7 @@ def main():
     albums_to_songs_csv(songs_by_album, existing_df)
     songs_to_lyrics()
     lyrics_to_json()
+    songs_to_json()
 
 
 def get_songs_by_album(genius, songs_by_album, last_album, songs_so_far, append_paths):
@@ -296,6 +299,29 @@ def lyrics_to_json():
     with open(LYRIC_JSON_PATH, 'w') as f:
         f.write(lyric_json)
         f.close()
+
+
+def songs_to_json():
+    print('Generating songs JSON...')
+    songs = {}
+    # Read the fresh CSV file we just made
+    song_data = pd.read_csv(CSV_PATH)
+
+    for row in song_data.to_records(index=False):
+        title, album, lyrics = row
+        if album != album:  # Handling for any unexpected NaN values
+            album = "Unknown Album"
+        if album not in songs:
+            songs[album] = {}
+        songs[album][title] = "" if lyrics != lyrics else lyrics # Handling NaN lyrics safely
+
+    # Write out the songs.json formatting matching your script
+    with open('songs.json', 'w', encoding='utf-8') as f:
+        json.dump(songs, f, ensure_ascii=False, indent=2)
+        f.close()
+
+    total_songs = sum(len(v) for v in songs.values())
+    print(f"Done — {total_songs} songs across {len(songs)} albums")
 
 
 def clean_string(string: str) -> str:
