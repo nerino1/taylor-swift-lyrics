@@ -8,4 +8,5 @@ You can use it to scrape Taylor Swift songs yourself (or modify it to make it wo
 Usage:
 
 py -m pip install -r requirements.txt
+
 py scraper.py
